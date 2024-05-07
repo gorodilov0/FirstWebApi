@@ -1,4 +1,5 @@
 ﻿using FirstWebApi.Models;
+using FirstWebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstWebApi.Controllers
@@ -13,22 +14,26 @@ namespace FirstWebApi.Controllers
             _iUsersService = iUsersService;
         }
 
+        [HttpGet]
         public IActionResult GetUsers()
         {
-            return _iUsersService.GetUsers();
+            var users = _iUsersService.GetUsers();
+            return Ok(users);
         }
 
         [HttpPost]
         public IActionResult AddUser (Users user) 
         { 
-           return _iUsersService.AddUser(user);
+           _iUsersService.AddUser(user);
+            return Ok();
+
         }
 
         [HttpDelete("{id}")]
         public IActionResult RemoveUser(int id)
         {
-
-            return _iUsersService.RemoveUser(id);
+            _iUsersService.RemoveUser(id);
+            return Ok();
 
         }
     }

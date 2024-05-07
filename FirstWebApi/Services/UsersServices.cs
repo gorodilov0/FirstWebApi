@@ -1,18 +1,8 @@
 ﻿using FirstWebApi.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FirstWebApi
+namespace FirstWebApi.Services
 {
-    
-
-    public interface IUsersService
-    {
-        IActionResult GetUsers();
-        IActionResult AddUser(Users user);
-        IActionResult RemoveUser(int id);
-    }
-
     public class UsersService : IUsersService
 
     {
@@ -43,33 +33,21 @@ namespace FirstWebApi
             }
         };
 
-        [HttpGet]
-        IActionResult IUsersService.GetUsers()
+
+        public List<Users> GetUsers()
         {
-            if (listUsers.Count > 0)
-            {
-                return Ok(listUsers);
-            }
-            return NoContent();
+             return listUsers;           
         }
 
-        IActionResult IUsersService.AddUser(Users user)
+        public void AddUser(Users user)
         {
             listUsers.Add(user);
-            return Ok();
         }
 
-        IActionResult IUsersService.RemoveUser(int id)
+        public void RemoveUser(int id)
         {
             Users users = listUsers.Find(item => item.Id == id);
-
-            if (users != null)
-            {
-                listUsers.Remove(users);
-            }
-
-            return NoContent();
+            listUsers.Remove(users);
         }
     }
-
 }
