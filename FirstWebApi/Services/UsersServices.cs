@@ -1,53 +1,74 @@
 ﻿using FirstWebApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 
 namespace FirstWebApi.Services
 {
     public class UsersService : IUsersService
 
     {
-        private static List<Users> listUsers = new List<Users>()
-        {
-            new Users()
-            {
-                FirstName = "Ivan",
-                LastName = "Ivanov",
-                Id = 0,
-                Login = "IvaIva"
-            },
-
-            new Users()
-            {
-                FirstName = "Sergey",
-                LastName = "Sergeev",
-                Id = 1,
-                Login = "Serega"
-            },
-
-            new Users()
-            {
-                FirstName = "Nikita",
-                LastName = "Nikitin",
-                Id = 2,
-                Login = "Nik"
-            }
-        };
-
-
+        private readonly string connectionString = "Data Source=FirstWebApi.db";
         public List<Users> GetUsers()
         {
-             return listUsers;           
+            List<Users> users = new List<Users>();
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = "SELECT * FROM Users";
+                SqliteCommand command = new SqliteCommand(sql, connection);
+
+                using (SqliteDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Users user = new Users();
+
+                        user.FirstName = reader.GetString(0);
+                        user.LastName = reader.GetString(1);
+                        user.Id = reader.GetInt32(2);
+                        user.Login = reader.GetString(3);
+
+                        users.Add(user);
+                    }
+                }
+            }
+            return users;
         }
 
         public void AddUser(Users user)
         {
-            listUsers.Add(user);
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+
+                string sql = "INSERT INTO Users " +
+                    "(firstname, lastname, id, login) VALUES " +
+                    "(@firstname, @lastname, @id, @login)";
+
+                using (var command = new SqliteCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@firstname", user.FirstName);
+                    command.Parameters.AddWithValue("@lastname", user.LastName);
+                    command.Parameters.AddWithValue("@id", user.Id);
+                    command.Parameters.AddWithValue("@login", user.Login);
+
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         public void RemoveUser(int id)
         {
-            Users users = listUsers.Find(item => item.Id == id);
-            listUsers.Remove(users);
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                string sql = $"DELETE  FROM Users WHERE Id='{id}'";
+
+                SqliteCommand command = new SqliteCommand(sql, connection);
+                command.ExecuteNonQuery();
+            }
         }
     }
 }
