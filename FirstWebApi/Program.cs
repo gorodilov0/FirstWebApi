@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry();
-builder.Services.AddTransient<IUsersService>();
+builder.Services.AddSingleton<IUsersService, UsersService>();
 
 var app = builder.Build();
 

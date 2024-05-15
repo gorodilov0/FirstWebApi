@@ -1,8 +1,6 @@
 ﻿using FirstWebApi.Models;
 using FirstWebApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.Sqlite;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FirstWebApi.Controllers
 {
@@ -21,14 +19,13 @@ namespace FirstWebApi.Controllers
         {
             try
             {
-                _iUsersService.GetUsers();
+                return Ok(_iUsersService.GetUsers()); 
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("Users", "Sorry, but we have an exception");
                 return BadRequest(ModelState);
             }
-            return Ok();
         }
 
         [HttpPost]
